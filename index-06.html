@@ -1,0 +1,1611 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>박슨생 한자 교실</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        /* ==================== 공통 및 기존 스타일 ==================== */
+        :root {
+            --primary-color: #4b6cb7;
+            --secondary-color: #182848;
+            --accent-color: #f5a623;
+            --bg-color: #f0f4f8;
+            --card-bg: #FFFFFF;
+            --text-color: #333333;
+            --light-text: #666666;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        * { box-sizing: border-box; }
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        #app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        header {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .header-container {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            justify-content: space-between;
+        }
+        .nav-icon {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.8em;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .nav-icon:active { transform: scale(0.9); }
+        .logo-text {
+            font-family: 'Jua', sans-serif;
+            font-size: 1.5em;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+        }
+        .drawer {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100%;
+            background: var(--card-bg);
+            box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+            transition: left 0.3s ease;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+        }
+        .drawer.open { left: 0; }
+        .drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .drawer-header h3 {
+            font-family: 'Jua', sans-serif;
+            margin: 0;
+            font-size: 1.5em;
+            color: var(--primary-color);
+        }
+        .drawer-menu { padding: 10px 0; }
+        .drawer-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            font-size: 1.1em;
+            color: var(--text-color);
+            cursor: pointer;
+            border-radius: 0;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .drawer-item:hover {
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+        }
+        .drawer-item .material-icons {
+            margin-right: 15px;
+        }
+        .close-btn { color: #555; font-size: 2em; }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1500;
+            display: none;
+            cursor: pointer;
+        }
+        .main-screen-content {
+            text-align: center;
+            padding-top: 100px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        #main-logo { width: 250px; margin-bottom: 30px; }
+        .main-screen-content h1 {
+            font-family: 'Jua', sans-serif;
+            color: var(--secondary-color);
+            font-size: 2.5em;
+        }
+        .main-screen-content p { color: var(--light-text); font-size: 1.2em; }
+        .drawer-submenu {
+            display: none;
+            flex-direction: column;
+            margin-left: 25px;
+            border-left: 2px solid #eef1f6;
+            padding-left: 10px;
+        }
+        .drawer-submenu.open { display: flex; }
+        .screen { display: none; padding: 80px 20px 20px; animation: fadeIn 0.3s ease; }
+        .screen.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .content-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            min-height: calc(100vh - 100px);
+        }
+        h2 {
+            font-family: 'Jua', sans-serif;
+            color: var(--primary-color);
+            border-bottom: 2px solid #eef1f6;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .input-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+            justify-content: center;
+        }
+        .input-group input, .input-group select {
+            flex: 1;
+            min-width: 120px;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+            transition: border-color 0.2s;
+        }
+        .input-group input:focus, .input-group select:focus { border-color: var(--primary-color); outline: none; }
+        .action-btn {
+            padding: 12px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.2s, transform 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .action-btn:hover { background-color: #3f51b5; transform: translateY(-2px); }
+        .result-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .hanja-card {
+            background: #eef1f6;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        .hanja-card:hover { transform: translateY(-3px); }
+        .hanja-card .hanja {
+            font-family: 'Jua', sans-serif;
+            font-size: 3em;
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+        .hanja-card .meaning { font-size: 1em; color: var(--text-color); margin-top: 5px; }
+        .hanja-card .grade-info { font-size: 0.9em; color: var(--light-text); margin-top: 10px; }
+        .search-options-group {
+            border-bottom: 1px solid #eef1f6;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+        /* Hanzi Writer 관련 스타일 */
+        .hanzi-writer-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        .hanzi-area {
+            width: 100%;
+            max-width: 300px;
+            height: 300px;
+            border: 2px solid var(--primary-color);
+            border-radius: 10px;
+            box-shadow: var(--box-shadow);
+        }
+        .hanzi-controls { display: flex; gap: 10px; }
+        
+        /* 퀴즈 공통 스타일 */
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 20px;
+            min-height: 400px;
+            justify-content: center;
+        }
+        .quiz-hanja {
+            font-family: 'Jua', sans-serif;
+            font-size: 5em;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        .quiz-question {
+            font-size: 1.5em;
+            color: var(--text-color);
+        }
+        .quiz-input {
+            width: 80%;
+            max-width: 300px;
+            padding: 12px;
+            font-size: 1.2em;
+            border-radius: 8px;
+            border: 2px solid #ccc;
+            text-align: center;
+        }
+        .quiz-options {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+        }
+        .quiz-option {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px 20px;
+            background: #eef1f6;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .quiz-option:hover { background: #d7e0f0; transform: translateY(-2px); }
+        .quiz-option.selected {
+            background-color: var(--primary-color);
+            color: white;
+            border: 1px solid var(--primary-color);
+        }
+        .quiz-result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .result-correct { color: #2ecc71; }
+        .result-incorrect { color: #e74c3c; }
+        .quiz-info-bar {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 20px;
+            font-size: 1em;
+            color: var(--light-text);
+        }
+        #quizTimer, #quizScore { font-weight: bold; color: var(--primary-color); }
+
+        /* ==================== 플래시카드 & 메모리 게임 스타일 ==================== */
+        
+        /* 플래시카드 고유 스타일 */
+        .flashcard-main-container { font-family:'Arial',sans-serif; background-color:#f6f8fa; color:#333; display:flex; justify-content:center; align-items:center; flex-direction:column; min-height:100vh; margin:0; padding:20px; box-sizing:border-box; }
+        .flashcard-container-wrapper { background-color:#fff; padding:30px; border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,0.1); text-align:center; width:95%; max-width:700px; margin:20px auto; }
+        .flashcard-title { color:#3f51b5; margin-bottom:25px; font-size:2.2em; }
+        .flashcard-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:20px; width:100%; max-width:650px; margin:0 auto; }
+        .flashcard-card-container { perspective:1000px; transition:transform 0.3s ease, box-shadow 0.3s ease; }
+        .flashcard-card-container:hover { transform:translateY(-5px); box-shadow:0 8px 20px rgba(0,0,0,0.15); }
+        .flashcard-card { width:100%; height:140px; position:relative; transform-style:preserve-3d; transition:transform 0.6s; cursor:pointer; border-radius:10px; }
+        .flashcard-card.is-flipped { transform:rotateY(180deg); }
+        .flashcard-face { position:absolute; width:100%; height:100%; backface-visibility:hidden; display:flex; justify-content:center; align-items:center; font-weight:bold; border-radius:10px; box-shadow:0 4px 15px rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.4); }
+        .flashcard-front { background:#3f51b5; color:#fff; font-size:3em; text-shadow:2px 2px 4px rgba(0,0,0,0.3); }
+        .flashcard-back { background:#fff; color:#3f51b5; transform:rotateY(180deg); font-size:1.2em; flex-direction:column; padding:10px; line-height:1.4; box-sizing:border-box; border:2px solid #3f51b5; }
+        .hanja-on-back { font-size:1.5em; margin-bottom:5px; }
+        .card-back-text { font-size:0.9em; font-weight:normal; color:#555; }
+        
+        /* 메모리 게임 고유 스타일 */
+        .hanja-memory-game-container { font-family:'Arial',sans-serif; background-color:#f6f8fa; color:#333; display:flex; justify-content:center; align-items:center; flex-direction:column; min-height:100vh; margin:0; padding:20px; box-sizing:border-box; }        
+        .game-container { background-color:#fff; padding:30px; border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,0.1); text-align:center; width:95%; max-width:900px; margin:20px auto; }
+        #game-info { display:flex; justify-content:space-between; align-items:center; width:100%; max-width:600px; margin:10px auto 25px auto; font-size:1.1em; color:#555; gap:10px; flex-wrap:wrap; }
+        #restart-btn, #back-to-settings-btn, #startMemoryBtn { padding:10px 18px; background-color:#42a5f5; color:#fff; border:none; border-radius:25px; cursor:pointer; font-size:1em; transition:background-color 0.3s ease, transform 0.3s ease; box-shadow:0 4px 10px rgba(0,0,0,0.15); }
+        #restart-btn:hover, #back-to-settings-btn:hover, #startMemoryBtn:hover { transform:scale(1.03); background-color:#3f51b5; }
+        #settings-row { display:flex; gap:10px; justify-content:center; align-items:center; margin-bottom:15px; flex-wrap:wrap; }
+        select { padding:8px 10px; border-radius:8px; border:1px solid #ddd; font-size:1em; }
+        .card-grid { display:grid; gap:15px; width:100%; max-width:850px; margin:0 auto; justify-content:center; }
+        .grid-easy { grid-template-columns: repeat(4, 1fr); }
+        .grid-normal { grid-template-columns: repeat(6, 1fr); }
+        .grid-hard { grid-template-columns: repeat(6, 1fr); }
+        .card-container { perspective:1000px; height:120px; transition:transform 0.3s ease; }
+        .card-container:hover { transform:translateY(-5px); }
+        .card { width:100%; height:100%; position:relative; transform-style:preserve-3d; transition:transform 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55); cursor:pointer; border-radius:10px; box-shadow:0 4px 15px rgba(0,0,0,0.2); }
+        .card.is-flipped { transform:rotateY(180deg); }
+        .card.is-matched { pointer-events:none; opacity:0.9; transform:scale(0.98); }
+        .card-face { position:absolute; width:100%; height:100%; backface-visibility:hidden; display:flex; justify-content:center; align-items:center; font-weight:bold; border-radius:10px; padding:10px; box-sizing:border-box; border:1px solid rgba(255,255,255,0.4); }
+        .card-front { background:#3f51b5; color:#fff; font-size:2.5em; text-shadow:2px 2px 4px rgba(0,0,0,0.3); }
+        .card-back { background:#fff; color:#3f51b5; transform:rotateY(180deg); font-size:1em; flex-direction:column; line-height:1.4; border:2px solid #3f51b5; }
+        .card-face.is-matched-face { background-color:#b3e5fc; color:#3f51b5; box-shadow:0 4px 15px rgba(0,0,0,0.2), 0 0 10px #b3e5fc; }
+
+        #alert-modal { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); padding:20px; background:#fff; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.5); z-index:1000; display:none; text-align:center; }
+        
+        @media (max-width:768px) {
+            .card-grid.grid-normal, .card-grid.grid-hard { grid-template-columns: repeat(4, 1fr); }
+            .flashcard-grid { grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); }
+        }
+        @media (max-width:500px) {
+            .card-grid, .flashcard-grid { grid-template-columns: repeat(3, 1fr) !important; }
+            .card-front { font-size:1.5em; }
+            .flashcard-front { font-size:2.5em; }
+        }
+    </style>
+</head>
+<body>
+    <div id="app-container">
+        <header>
+            <div class="header-container">
+                <button id="menu-btn" class="nav-icon"><i class="material-icons">menu</i></button>
+                <span class="logo-text" id="logo-text">박슨생 한자 교실</span>
+                <button id="home-btn" class="nav-icon"><i class="material-icons">home</i></button>
+            </div>
+        </header>
+
+        <nav id="side-drawer" class="drawer">
+            <div class="drawer-header">
+                <h3>메뉴</h3>
+                <button class="nav-icon close-btn"><i class="material-icons">close</i></button>
+            </div>
+            <div class="drawer-menu">
+                <div class="drawer-item main-menu" data-menu="menu1"><i class="material-icons">search</i> 한자 찾기</div>
+                <div class="drawer-submenu" data-submenu="menu1">
+                    <div class="drawer-item sub-menu" data-target="hanjaSearch">한자 검색</div>
+                    <div class="drawer-item sub-menu" data-target="hanjaPronunciation">한자 목록</div>
+                </div>
+                <div class="drawer-item main-menu" data-menu="menu2"><i class="material-icons">school</i> 한자 학습</div>
+                <div class="drawer-submenu" data-submenu="menu2">
+                    <div class="drawer-item sub-menu" data-target="hanjaStroke">한자 필순</div>
+                    <div class="drawer-item sub-menu" data-target="hanjaWriting">한자 쓰기</div>
+                    <div class="drawer-item sub-menu" data-target="hanjaFlash">플래시카드</div>
+                </div>
+                <div class="drawer-item main-menu" data-menu="menu3"><i class="material-icons">quiz</i> 한자 퀴즈</div>
+                <div class="drawer-submenu" data-submenu="menu3">
+                    <div class="drawer-item sub-menu" data-target="hanjaQuizPronunciationFind">훈음 맞히기 (주관식)</div>
+                    <div class="drawer-item sub-menu" data-target="hanjaQuizChoosePronunciation">훈음 고르기 (4지 선다)</div>
+                    <div class="drawer-item sub-menu" data-target="hanjaQuizChooseHanja">한자 고르기 (4지 선다)</div>
+                </div>
+                <div class="drawer-item main-menu" data-menu="menu4"><i class="material-icons">sports_esports</i> 한자 게임</div>
+                <div class="drawer-submenu" data-submenu="menu4">
+                    <div class="drawer-item sub-menu" data-target="hanjaMemory">한자 메모리 게임</div>
+                    <div class="drawer-item sub-menu" data-target="hanjaBingo">한자 빙고 게임</div>
+                    <div class="drawer-item sub-menu" data-target="hanjaShooting">한자 슈팅 게임</div>
+                </div>
+            </div>
+        </nav>
+        <div id="overlay" class="overlay"></div>
+
+        <main id="main-content">
+            <section id="home" class="screen active">
+                <div class="main-screen-content">
+                    <img id="main-logo" src="logo.png" alt="채널 로고">
+                    <h1>한자 학습을 시작해볼까요?</h1>
+                    <p>좌측 상단 메뉴를 눌러 다양한 기능을 이용해 보세요.</p>
+                </div>
+            </section>
+
+            <section id="hanjaSearch" class="screen">
+                <div class="content-container">
+                    <h2>한자 검색</h2>
+                    <div class="search-options-group">
+                        <h3>직접 입력하여 검색</h3>
+                        <div class="input-group">
+                            <input type="text" id="hanjaSearchInput" placeholder="한자, 훈음, 음 입력">
+                            <button id="searchHanjaBtn" class="action-btn">검색</button>
+                        </div>
+                    </div>
+                    <div class="search-options-group">
+                        <h3>급수별 선택하여 검색</h3>
+                        <div class="input-group">
+                            <select id="searchGradeSelect">
+                                <option value="">급수 선택</option>
+                                <option value="8">8급</option><option value="7_1">준7급</option><option value="7">7급</option>
+                                <option value="6_1">준6급</option><option value="6">6급</option><option value="5_1">준5급</option>
+                                <option value="5">5급</option><option value="4_1">준4급</option><option value="4">4급</option>
+                                <option value="3_1">준3급</option><option value="3">3급</option><option value="2">2급</option>
+                                <option value="1">1급</option>
+                            </select>
+                            <select id="searchHanjaSelect" disabled>
+                                <option value="">한자 선택</option>
+                            </select>
+                            <button id="searchHanjaByDropdownBtn" class="action-btn" disabled>한자 선택</button>
+                        </div>
+                    </div>
+                    <div id="hanjaSearchResult" class="result-list"></div>
+                </div>
+            </section>
+
+            <section id="hanjaPronunciation" class="screen">
+                <div class="content-container">
+                    <h2>한자 목록</h2>
+                    <p>급수별 한자 목록을 한눈에 확인하세요.</p>
+                    <div class="input-group">
+                        <select id="pronunciationGradeSelect">
+                            <option value="8">8급</option><option value="7_1">준7급</option><option value="7">7급</option>
+                            <option value="6_1">준6급</option><option value="6">6급</option><option value="5_1">준5급</option>
+                            <option value="5">5급</option><option value="4_1">준4급</option><option value="4">4급</option>
+                            <option value="3_1">준3급</option><option value="3">3급</option><option value="2">2급</option>
+                            <option value="1">1급</option>
+                        </select>
+                        <button id="showPronunciationBtn" class="action-btn">목록 불러오기</button>
+                    </div>
+                    <div id="pronunciationList" class="result-list"></div>
+                </div>
+            </section>
+
+            <section id="hanjaFlash" class="screen">
+                <div class="flashcard-main-container">
+                    <div class="flashcard-container-wrapper">
+                        <div style="display:flex; justify-content:center; gap:12px; align-items:center; margin-bottom:16px;">
+                            <h1 class="flashcard-title" id="flash-title">한자 플래시카드</h1>
+                            <select id="gradeSelectFlash" title="플래시카드 급수 선택">
+                                <option value="8">8급</option><option value="7_1">준7급</option><option value="7">7급</option>
+                                <option value="6_1">준6급</option><option value="6">6급</option><option value="5_1">준5급</option>
+                                <option value="5">5급</option><option value="4_1">준4급</option><option value="4">4급</option>
+                                <option value="3_1">준3급</option><option value="3">3급</option><option value="2">2급</option>
+                                <option value="1">1급</option>
+                            </select>
+                            <button id="loadFlashBtn" class="action-btn" style="padding:8px 12px; border-radius:8px;">불러오기</button>
+                        </div>
+                        <div class="flashcard-grid" id="flashcard-grid"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="hanjaStroke" class="screen">
+                <div class="content-container hanzi-writer-container">
+                    <h2>한자 필순 보기</h2>
+                    <div class="search-options-group">
+                        <h3>직접 입력하여 보기</h3>
+                        <div class="input-group">
+                            <input type="text" id="strokeHanjaInput" placeholder="한자 한 글자 입력" maxlength="1">
+                            <button id="showStrokeBtn" class="action-btn">필순 보기</button>
+                        </div>
+                    </div>
+                    <div class="search-options-group">
+                        <h3>급수별 선택하여 보기</h3>
+                        <div class="input-group">
+                            <select id="strokeGradeSelect">
+                                <option value="">급수 선택</option>
+                                <option value="8">8급</option><option value="7_1">준7급</option><option value="7">7급</option>
+                                <option value="6_1">준6급</option><option value="6">6급</option><option value="5_1">준5급</option>
+                                <option value="5">5급</option><option value="4_1">준4급</option><option value="4">4급</option>
+                                <option value="3_1">준3급</option><option value="3">3급</option><option value="2">2급</option>
+                                <option value="1">1급</option>
+                            </select>
+                            <select id="strokeHanjaSelect" disabled>
+                                <option value="">한자 선택</option>
+                            </select>
+                            <button id="showStrokeByDropdownBtn" class="action-btn" disabled>한자 선택</button>
+                        </div>
+                    </div>
+                    <div id="stroke-drawing" class="hanzi-area"></div>
+                    <div id="hanzi-controls-stroke" class="hanzi-controls">
+                        <button id="animateBtn" class="action-btn" style="display:none;">다시 보기</button>
+                        <button id="quizBtn" class="action-btn" style="display:none;">쓰기 연습</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="hanjaWriting" class="screen">
+                <div class="content-container hanzi-writer-container">
+                    <h2>한자 쓰기 연습</h2>
+                    <div class="search-options-group">
+                        <h3>직접 입력하여 연습</h3>
+                        <div class="input-group">
+                            <input type="text" id="writingHanjaInput" placeholder="한자 한 글자 입력" maxlength="1">
+                            <button id="startWritingBtn" class="action-btn">연습 시작</button>
+                        </div>
+                    </div>
+                    <div class="search-options-group">
+                        <h3>급수별 선택하여 연습</h3>
+                        <div class="input-group">
+                            <select id="writingGradeSelect">
+                                <option value="">급수 선택</option>
+                                <option value="8">8급</option><option value="7_1">준7급</option><option value="7">7급</option>
+                                <option value="6_1">준6급</option><option value="6">6급</option><option value="5_1">준5급</option>
+                                <option value="5">5급</option><option value="4_1">준4급</option><option value="4">4급</option>
+                                <option value="3_1">준3급</option><option value="3">3급</option><option value="2">2급</option>
+                                <option value="1">1급</option>
+                            </select>
+                            <select id="writingHanjaSelect" disabled>
+                                <option value="">한자 선택</option>
+                            </select>
+                            <button id="startWritingByDropdownBtn" class="action-btn" disabled>한자 선택</button>
+                        </div>
+                    </div>
+                    <div id="writing-drawing" class="hanzi-area"></div>
+                </div>
+            </section>
+
+            <section id="hanjaQuizPronunciationFind" class="screen">
+                <div class="content-container quiz-container">
+                    <h2>훈음 맞히기 (주관식)</h2>
+                    <div class="input-group">
+                        <select id="findQuizGradeSelect">
+                            <option value="8">8급</option><option value="7_1">준7급</option><option value="7">7급</option>
+                            <option value="6_1">준6급</option><option value="6">6급</option><option value="5_1">준5급</option>
+                            <option value="5">5급</option><option value="4_1">준4급</option><option value="4">4급</option>
+                            <option value="3_1">준3급</option><option value="3">3급</option><option value="2">2급</option>
+                            <option value="1">1급</option>
+                        </select>
+                        <select id="findQuizCountSelect">
+                            <option value="10">10개</option><option value="20">20개</option><option value="30">30개</option>
+                        </select>
+                        <button id="startFindQuizBtn" class="action-btn">퀴즈 시작</button>
+                    </div>
+                    <div id="findQuizArea" style="display:none;">
+                        <div class="quiz-info-bar">
+                            <span>점수: <span id="findScore">0</span></span>
+                            <span>남은 문제: <span id="findRemaining">0</span></span>
+                        </div>
+                        <p id="findHanja" class="quiz-hanja">?</p>
+                        <p id="findQuizQuestion" class="quiz-question">이 한자의 훈음은 무엇일까요?</p>
+                        <input type="text" id="findAnswerInput" class="quiz-input" placeholder="훈음 입력 후 Enter">
+                        <div id="findResult" class="quiz-result"></div>
+                        <button id="resetFindQuizBtn" class="action-btn" style="margin-top:20px;">처음으로</button>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="hanjaQuizChoosePronunciation" class="screen">
+                <div class="content-container quiz-container">
+                    <h2>훈음 고르기 (4지 선다)</h2>
+                    <div class="input-group">
+                        <select id="choosePronunciationQuizGradeSelect">
+                            <option value="8">8급</option><option value="7_1">준7급</option><option value="7">7급</option>
+                            <option value="6_1">준6급</option><option value="6">6급</option><option value="5_1">준5급</option>
+                            <option value="5">5급</option><option value="4_1">준4급</option><option value="4">4급</option>
+                            <option value="3_1">준3급</option><option value="3">3급</option><option value="2">2급</option>
+                            <option value="1">1급</option>
+                        </select>
+                        <select id="choosePronunciationQuizCountSelect">
+                            <option value="10">10개</option><option value="20">20개</option><option value="30">30개</option>
+                        </select>
+                        <button id="startChoosePronunciationQuizBtn" class="action-btn">퀴즈 시작</button>
+                    </div>
+                    <div id="choosePronunciationQuizArea" style="display:none;">
+                        <div class="quiz-info-bar">
+                            <span>점수: <span id="choosePronunciationScore">0</span></span>
+                            <span>남은 문제: <span id="choosePronunciationRemaining">0</span></span>
+                        </div>
+                        <p id="choosePronunciationHanja" class="quiz-hanja">?</p>
+                        <p id="choosePronunciationQuizQuestion" class="quiz-question">이 한자의 훈음은 무엇일까요?</p>
+                        <div id="choosePronunciationOptions" class="quiz-options"></div>
+                        <div id="choosePronunciationResult" class="quiz-result"></div>
+                        <button id="resetChoosePronunciationQuizBtn" class="action-btn" style="margin-top:20px;">처음으로</button>
+                    </div>
+                </div>
+            </section>
+            <section id="hanjaQuizChooseHanja" class="screen">
+                <div class="content-container quiz-container">
+                    <h2>한자 고르기 (4지 선다)</h2>
+                    <div class="input-group">
+                        <select id="chooseHanjaQuizGradeSelect">
+                            <option value="8">8급</option><option value="7_1">준7급</option><option value="7">7급</option>
+                            <option value="6_1">준6급</option><option value="6">6급</option><option value="5_1">준5급</option>
+                            <option value="5">5급</option><option value="4_1">준4급</option><option value="4">4급</option>
+                            <option value="3_1">준3급</option><option value="3">3급</option><option value="2">2급</option>
+                            <option value="1">1급</option>
+                        </select>
+                        <select id="chooseHanjaQuizCountSelect">
+                            <option value="10">10개</option><option value="20">20개</option><option value="30">30개</option>
+                        </select>
+                        <button id="startChooseHanjaQuizBtn" class="action-btn">퀴즈 시작</button>
+                    </div>
+                    <div id="chooseHanjaQuizArea" style="display:none;">
+                        <div class="quiz-info-bar">
+                            <span>점수: <span id="chooseHanjaScore">0</span></span>
+                            <span>남은 문제: <span id="chooseHanjaRemaining">0</span></span>
+                        </div>
+                        <p id="chooseHanjaMeaning" class="quiz-question">이 훈음에 맞는 한자는?</p>
+                        <div id="chooseHanjaOptions" class="quiz-options"></div>
+                        <div id="chooseHanjaResult" class="quiz-result"></div>
+                        <button id="resetChooseHanjaQuizBtn" class="action-btn" style="margin-top:20px;">처음으로</button>
+                    </div>
+                </div>
+            </section>
+            <section id="hanjaMemory" class="screen">
+                <div class="hanja-memory-game-container">
+                    <div class="game-container">
+                        <h2>한자 메모리 게임</h2>
+                        <div id="memory-settings">
+                            <div id="settings-row">
+                                <label> 급수: <select id="gradeSelectMemory" title="급수 선택">
+                                    <option value="">--급수 선택--</option><option value="1">1급</option><option value="2">2급</option>
+                                    <option value="3">3급</option><option value="3_1">준3급</option><option value="4">4급</option>
+                                    <option value="4_1">준4급</option><option value="5">5급</option><option value="5_1">준5급</option>
+                                    <option value="6">6급</option><option value="6_1">준6급</option><option value="7">7급</option>
+                                    <option value="7_1">준7급</option><option value="8">8급</option>
+                                </select> </label>
+                                <label> 난이도: <select id="difficultySelectMemory" title="난이도 선택">
+                                    <option value="6">쉬움 (6쌍)</option><option value="12" selected>보통 (12쌍)</option>
+                                    <option value="18">어려움 (18쌍)</option>
+                                </select> </label>
+                                <button id="startMemoryBtn" class="action-btn">게임 시작</button>
+                            </div>
+                        </div>
+                        <div id="memory-game-area" style="display:none;">
+                            <div id="game-info">
+                                <div style="display:flex;gap:8px;align-items:center;">
+                                    <button id="back-to-settings-btn" class="action-btn">돌아가기</button>
+                                    <button id="restart-btn" class="action-btn">다시 시작</button>
+                                </div>
+                                <div id="moves-counter">시도 횟수: 0</div>
+                                <div id="pairs-counter">맞힌 쌍: 0 / 12</div>
+                            </div>
+                            <div class="card-grid" id="card-grid"></div>
+                        </div>
+                    </div>
+                    <div id="alert-modal"><p>축하합니다! 모든 짝을 맞혔습니다!</p></div>
+                </div>
+            </section>
+            <section id="hanjaBingo" class="screen">
+                <div class="content-container"><h2>한자 빙고 게임</h2><p>이곳에 빙고 게임 관련 코드를 구현하면 됩니다.</p></div>
+            </section>
+            <section id="hanjaShooting" class="screen">
+                <div class="content-container"><h2>한자 슈팅 게임</h2><p>이곳에 슈팅 게임 관련 코드를 구현하면 됩니다.</p></div>
+            </section>
+        </main>
+    </div>
+    <audio id="correctSound" src="correct.mp3" preload="auto"></audio>
+    <audio id="incorrectSound" src="incorrect.mp3" preload="auto"></audio>
+    <audio id="waterDropSound" src="water_drop.mp3" preload="auto"></audio>
+    <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.7.2/dist/hanzi-writer.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            /* ================== 전역 변수 및 유틸 함수 ================== */
+            const allHanjaData = {}; // 급수별 데이터를 담을 객체
+            let currentQuizData = []; // 현재 퀴즈 데이터
+            let quizIndex = 0;
+            let quizScore = 0;
+            const correctSound = document.getElementById('correctSound');
+            const incorrectSound = document.getElementById('incorrectSound');
+            const waterDropSound = document.getElementById('waterDropSound');
+
+            // 한자인지 확인하는 정규식
+            const isHanja = (char) => /[\u4e00-\u9fff]/.test(char);
+
+            // 급수: 예: "7_1", "3", "8" 등
+            function getDisplayGrade(grade) {
+                if (grade.includes('_1')) {
+                    return `준${grade.replace('_1', '')}급`;
+                }
+                return `${grade}급`;
+            }
+
+            function ensureGradeDataLoaded(grade) {
+                return new Promise((resolve, reject) => {
+                    if (!grade) {
+                        reject(new Error("급수가 비어있습니다."));
+                        return;
+                    }
+                    if (allHanjaData[grade]) {
+                        resolve(allHanjaData[grade]);
+                        return;
+                    }
+                    const scriptSrc = `js/grade${grade}.js`;
+                    const varName = `grade${grade.replace('_', '_')}Data`;
+                    let existingScript = document.querySelector(`script[src="${scriptSrc}"]`);
+                    if (existingScript) {
+                        if (existingScript.getAttribute('data-loaded') === '1') {
+                            try {
+                                allHanjaData[grade] = eval(varName);
+                                resolve(allHanjaData[grade]);
+                            } catch(e) {
+                                reject(new Error("데이터 유효성 오류"));
+                            }
+                        } else {
+                            existingScript.addEventListener('load', () => {
+                                existingScript.setAttribute('data-loaded', '1');
+                                try {
+                                    allHanjaData[grade] = eval(varName);
+                                    resolve(allHanjaData[grade]);
+                                } catch (e) {
+                                    reject(new Error("데이터가 유효하지 않습니다."));
+                                }
+                            });
+                            existingScript.addEventListener('error', () => reject(new Error("스크립트 로드 실패")));
+                        }
+                        return;
+                    }
+                    const script = document.createElement('script');
+                    script.src = scriptSrc;
+                    script.async = true;
+                    script.setAttribute('data-grade', grade);
+                    script.addEventListener('load', () => {
+                        script.setAttribute('data-loaded', '1');
+                        try {
+                            const data = eval(varName);
+                            if (!Array.isArray(data)) throw new Error("불러온 데이터가 배열이 아닙니다.");
+                            allHanjaData[grade] = data;
+                            resolve(data);
+                        } catch (err) {
+                            reject(new Error(`데이터 변수 ${varName}를 찾을 수 없거나 형식이 잘못되었습니다.`));
+                        }
+                    });
+                    script.addEventListener('error', () => {
+                        reject(new Error(`파일 로드 실패: ${scriptSrc}`));
+                    });
+                    document.body.appendChild(script);
+                });
+            }
+
+            // 모든 급수 데이터 로드
+            async function loadAllGradeData() {
+                const grades = Array.from(searchGradeSelect.options).filter(opt => opt.value !== '').map(opt => opt.value);
+                const promises = grades.map(grade => ensureGradeDataLoaded(grade).catch(e => {
+                    console.error(`Error loading data for grade ${grade}:`, e);
+                    // 에러가 나더라도 모든 프로미스를 기다립니다.
+                    return null;
+                }));
+                await Promise.all(promises);
+            }
+
+            function shuffle(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+
+            function playSound(soundElement) {
+                if (soundElement) {
+                    soundElement.currentTime = 0;
+                    soundElement.play().catch(e => console.error("오디오 재생 실패:", e));
+                }
+            }
+
+            /* ================== 드로어/네비게이션 로직 ================== */
+            const menuBtn = document.getElementById('menu-btn');
+            const homeBtn = document.getElementById('home-btn');
+            const drawer = document.getElementById('side-drawer');
+            const overlay = document.getElementById('overlay');
+            const closeBtn = document.querySelector('.close-btn');
+            const mainMenus = document.querySelectorAll('.main-menu');
+            const subMenus = document.querySelectorAll('.sub-menu');
+            const drawerSubmenus = document.querySelectorAll('.drawer-submenu');
+            const screens = document.querySelectorAll('.screen');
+            const logoText = document.getElementById('logo-text');
+            let currentScreenId = 'home';
+
+            function openDrawer() {
+                drawer.classList.add('open');
+                overlay.style.display = 'block';
+            }
+
+            function closeDrawer() {
+                drawer.classList.remove('open');
+                overlay.style.display = 'none';
+            }
+            
+            // 화면 이동 시 초기화 함수
+            const cleanupFunctions = {
+                hanjaStroke: cleanupHanjaStroke,
+                hanjaWriting: cleanupHanjaWriting,
+                hanjaQuizPronunciationFind: cleanupFindQuiz,
+                hanjaQuizChoosePronunciation: cleanupChoosePronunciationQuiz,
+                hanjaQuizChooseHanja: cleanupChooseHanjaQuiz
+            };
+
+            function cleanupCurrentScreen() {
+                if (cleanupFunctions[currentScreenId]) {
+                    cleanupFunctions[currentScreenId]();
+                }
+            }
+
+            function loadScreen(screenId) {
+                cleanupCurrentScreen();
+                screens.forEach(s => s.classList.remove('active'));
+                const target = document.getElementById(screenId);
+                if (target) {
+                    target.classList.add('active');
+                    currentScreenId = screenId;
+                    window.scrollTo(0, 0);
+                }
+            }
+
+            menuBtn.addEventListener('click', openDrawer);
+            closeBtn.addEventListener('click', closeDrawer);
+            overlay.addEventListener('click', closeDrawer);
+            logoText.addEventListener('click', () => loadScreen('home'));
+            homeBtn.addEventListener('click', () => loadScreen('home'));
+            
+            mainMenus.forEach(menu => {
+                menu.addEventListener('click', () => {
+                    drawerSubmenus.forEach(submenu => submenu.classList.remove('open'));
+                    const submenuTarget = menu.getAttribute('data-menu');
+                    const targetSubmenu = document.querySelector(`.drawer-submenu[data-submenu="${submenuTarget}"]`);
+                    if (targetSubmenu) {
+                        targetSubmenu.classList.toggle('open');
+                    }
+                });
+            });
+
+            subMenus.forEach(menu => {
+                menu.addEventListener('click', (e) => {
+                    const targetScreen = menu.getAttribute('data-target');
+                    loadScreen(targetScreen);
+                    closeDrawer();
+                });
+            });
+            
+            /* ================== 한자 필순 보기 로직 ================== */
+            const strokeHanjaInput = document.getElementById('strokeHanjaInput');
+            const showStrokeBtn = document.getElementById('showStrokeBtn');
+            const strokeDrawingArea = document.getElementById('stroke-drawing');
+            const animateBtn = document.getElementById('animateBtn');
+            const quizBtn = document.getElementById('quizBtn');
+
+            const strokeGradeSelect = document.getElementById('strokeGradeSelect');
+            const strokeHanjaSelect = document.getElementById('strokeHanjaSelect');
+            const showStrokeByDropdownBtn = document.getElementById('showStrokeByDropdownBtn');
+            
+            let hanziWriterStroke = null;
+
+            function cleanupHanjaStroke() {
+                if (hanziWriterStroke) {
+                    hanziWriterStroke.destroy();
+                    hanziWriterStroke = null;
+                }
+                strokeDrawingArea.innerHTML = '';
+                animateBtn.style.display = 'none';
+                quizBtn.style.display = 'none';
+            }
+
+            async function displayHanjaStroke(hanja) {
+                cleanupHanjaStroke();
+                if (!hanja || !isHanja(hanja)) {
+                    alert('올바른 한자 한 글자를 입력해주세요.');
+                    return;
+                }
+                
+                try {
+                    hanziWriterStroke = HanziWriter.create(strokeDrawingArea, hanja, {
+                        width: 300,
+                        height: 300,
+                        padding: 5,
+                        strokeColor: '#4b6cb7',
+                        radicalColor: '#182848',
+                        charDataLoader: (char, onComplete) => {
+                            onComplete(HanziWriter.loadCharacterData(char));
+                        },
+                    });
+
+                    animateBtn.style.display = 'inline-block';
+                    quizBtn.style.display = 'inline-block';
+                    
+                } catch (error) {
+                    alert('필순 데이터를 찾을 수 없거나 올바른 한자가 아닙니다.');
+                    console.error("HanziWriter Error: ", error);
+                    animateBtn.style.display = 'none';
+                    quizBtn.style.display = 'none';
+                }
+            }
+            
+            showStrokeBtn.addEventListener('click', () => {
+                const hanja = strokeHanjaInput.value.trim();
+                displayHanjaStroke(hanja);
+            });
+            
+            strokeGradeSelect.addEventListener('change', async (e) => {
+                const grade = e.target.value;
+                strokeHanjaSelect.innerHTML = '<option value="">한자 선택</option>';
+                strokeHanjaSelect.disabled = true;
+                showStrokeByDropdownBtn.disabled = true;
+                if (!grade) {
+                    return;
+                }
+                try {
+                    const data = await ensureGradeDataLoaded(grade);
+                    data.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.한자;
+                        option.textContent = item.한자;
+                        strokeHanjaSelect.appendChild(option);
+                    });
+                    strokeHanjaSelect.disabled = false;
+                    showStrokeByDropdownBtn.disabled = false;
+                } catch (err) {
+                    console.error(err);
+                    alert('해당 급수의 한자 데이터를 불러오지 못했습니다.');
+                }
+            });
+
+            showStrokeByDropdownBtn.addEventListener('click', () => {
+                const selectedHanja = strokeHanjaSelect.value;
+                if (!selectedHanja) {
+                    alert('한자를 먼저 선택해 주세요.');
+                    return;
+                }
+                displayHanjaStroke(selectedHanja);
+            });
+
+            animateBtn.addEventListener('click', () => {
+                if (hanziWriterStroke) {
+                    hanziWriterStroke.animateCharacter({
+                        onComplete: () => {}
+                    });
+                }
+            });
+            
+            quizBtn.addEventListener('click', () => {
+                if (hanziWriterStroke) {
+                    hanziWriterStroke.quiz();
+                }
+            });
+
+            /* ================== 한자 쓰기 연습 로직 ================== */
+            const writingHanjaInput = document.getElementById('writingHanjaInput');
+            const startWritingBtn = document.getElementById('startWritingBtn');
+            const writingDrawingArea = document.getElementById('writing-drawing');
+
+            const writingGradeSelect = document.getElementById('writingGradeSelect');
+            const writingHanjaSelect = document.getElementById('writingHanjaSelect');
+            const startWritingByDropdownBtn = document.getElementById('startWritingByDropdownBtn');
+            
+            let hanziWriterWriting = null;
+
+            function cleanupHanjaWriting() {
+                if (hanziWriterWriting) {
+                    hanziWriterWriting.destroy();
+                    hanziWriterWriting = null;
+                }
+                writingDrawingArea.innerHTML = '';
+            }
+
+            async function startHanjaWriting(hanja) {
+                cleanupHanjaWriting();
+                
+                if (!hanja || !isHanja(hanja)) {
+                    alert("올바른 한자 한 글자를 입력해주세요.");
+                    return;
+                }
+
+                try {
+                    hanziWriterWriting = HanziWriter.create('writing-drawing', hanja, {
+                        width: 300, height: 300, padding: 5, strokeColor: '#4b6cb7',
+                        showCharacter: false, showOutline: true,
+                        charDataLoader: (char, onComplete) => {
+                             onComplete(HanziWriter.loadCharacterData(char));
+                        },
+                    });
+                    hanziWriterWriting.quiz();
+                } catch(error) {
+                    alert('쓰기 연습을 위한 한자 데이터를 찾을 수 없습니다.');
+                    console.error('HanziWriter Error:', error);
+                }
+            }
+
+            startWritingBtn.addEventListener('click', () => {
+                const hanja = writingHanjaInput.value.trim();
+                startHanjaWriting(hanja);
+            });
+            
+            writingGradeSelect.addEventListener('change', async (e) => {
+                const grade = e.target.value;
+                writingHanjaSelect.innerHTML = '<option value="">한자 선택</option>';
+                writingHanjaSelect.disabled = true;
+                startWritingByDropdownBtn.disabled = true;
+                if (!grade) {
+                    return;
+                }
+                try {
+                    const data = await ensureGradeDataLoaded(grade);
+                    data.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.한자;
+                        option.textContent = item.한자;
+                        writingHanjaSelect.appendChild(option);
+                    });
+                    writingHanjaSelect.disabled = false;
+                    startWritingByDropdownBtn.disabled = false;
+                } catch (err) {
+                    console.error(err);
+                    alert('해당 급수의 한자 데이터를 불러오지 못했습니다.');
+                }
+            });
+
+            startWritingByDropdownBtn.addEventListener('click', () => {
+                const selectedHanja = writingHanjaSelect.value;
+                if (!selectedHanja) {
+                    alert('한자를 먼저 선택해 주세요.');
+                    return;
+                }
+                startHanjaWriting(selectedHanja);
+            });
+
+            /* ================== 한자 검색 로직 (수정) ================== */
+            const hanjaSearchInput = document.getElementById('hanjaSearchInput');
+            const searchHanjaBtn = document.getElementById('searchHanjaBtn');
+            const hanjaSearchResult = document.getElementById('hanjaSearchResult');
+            
+            const searchGradeSelect = document.getElementById('searchGradeSelect');
+            const searchHanjaSelect = document.getElementById('searchHanjaSelect');
+            const searchHanjaByDropdownBtn = document.getElementById('searchHanjaByDropdownBtn');
+
+            function displaySearchResults(results) {
+                hanjaSearchResult.innerHTML = '';
+                if (results.length === 0) {
+                    hanjaSearchResult.innerHTML = '<p>검색 결과가 없습니다.</p>';
+                    return;
+                }
+                results.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'hanja-card';
+                    card.innerHTML = `<span class="hanja">${item.한자}</span><div class="meaning">${item.훈음} (${item.음})</div><div class="grade-info">${item.grade}</div>`;
+                    hanjaSearchResult.appendChild(card);
+                });
+            }
+
+            function performSearch(query) {
+                let results = [];
+                for (const grade in allHanjaData) {
+                    const found = allHanjaData[grade].filter(item => 
+                        item.한자 === query || item.훈음.includes(query) || item.음 === query
+                    );
+                    results = results.concat(found.map(item => ({ ...item, grade: getDisplayGrade(grade) })));
+                }
+                displaySearchResults(results);
+            }
+            
+            searchHanjaBtn.addEventListener('click', async () => {
+                const query = hanjaSearchInput.value.trim();
+                if (!query) {
+                    hanjaSearchResult.innerHTML = '<p>검색어를 입력해 주세요.</p>';
+                    return;
+                }
+                
+                // 데이터가 로드되지 않았으면 모든 데이터를 먼저 로드합니다.
+                if (Object.keys(allHanjaData).length === 0) {
+                    hanjaSearchResult.innerHTML = '<p>데이터를 불러오는 중...</p>';
+                    await loadAllGradeData();
+                }
+                performSearch(query);
+            });
+
+            searchGradeSelect.addEventListener('change', async (e) => {
+                const grade = e.target.value;
+                searchHanjaSelect.innerHTML = '<option value="">한자 선택</option>';
+                searchHanjaSelect.disabled = true;
+                searchHanjaByDropdownBtn.disabled = true;
+                if (!grade) {
+                    return;
+                }
+                try {
+                    const data = await ensureGradeDataLoaded(grade);
+                    data.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.한자;
+                        option.textContent = item.한자;
+                        searchHanjaSelect.appendChild(option);
+                    });
+                    searchHanjaSelect.disabled = false;
+                    searchHanjaByDropdownBtn.disabled = false;
+                } catch (err) {
+                    console.error(err);
+                    alert('해당 급수의 한자 데이터를 불러오지 못했습니다.');
+                }
+            });
+
+            searchHanjaByDropdownBtn.addEventListener('click', () => {
+                const selectedHanja = searchHanjaSelect.value;
+                if (!selectedHanja) {
+                    alert('한자를 먼저 선택해 주세요.');
+                    return;
+                }
+                performSearch(selectedHanja);
+            });
+
+            /* ================== 한자 목록 로직 ================== */
+            const pronunciationGradeSelect = document.getElementById('pronunciationGradeSelect');
+            const showPronunciationBtn = document.getElementById('showPronunciationBtn');
+            const pronunciationList = document.getElementById('pronunciationList');
+
+            showPronunciationBtn.addEventListener('click', async () => {
+                const grade = pronunciationGradeSelect.value;
+                pronunciationList.innerHTML = '<p>데이터를 불러오는 중...</p>';
+                try {
+                    const data = await ensureGradeDataLoaded(grade);
+                    pronunciationList.innerHTML = '';
+                    if (data.length === 0) {
+                        pronunciationList.innerHTML = '<p>해당 급수의 데이터가 없습니다.</p>';
+                        return;
+                    }
+                    data.forEach(item => {
+                        const card = document.createElement('div');
+                        card.className = 'hanja-card';
+                        card.innerHTML = `<span class="hanja">${item.한자}</span><div class="meaning">${item.훈음} (${item.음})</div>`;
+                        pronunciationList.appendChild(card);
+                    });
+                } catch (err) {
+                    pronunciationList.innerHTML = '<p>데이터 로드 실패. 올바른 급수를 선택했는지 확인해주세요.</p>';
+                    console.error(err);
+                }
+            });
+            
+            /* ================== 훈음 맞히기 (주관식) 퀴즈 로직 ================== */
+            const findQuizGradeSelect = document.getElementById('findQuizGradeSelect');
+            const findQuizCountSelect = document.getElementById('findQuizCountSelect');
+            const startFindQuizBtn = document.getElementById('startFindQuizBtn');
+            const findQuizArea = document.getElementById('findQuizArea');
+            const findHanja = document.getElementById('findHanja');
+            const findAnswerInput = document.getElementById('findAnswerInput');
+            const findResult = document.getElementById('findResult');
+            const findScoreSpan = document.getElementById('findScore');
+            const findRemainingSpan = document.getElementById('findRemaining');
+            const resetFindQuizBtn = document.getElementById('resetFindQuizBtn');
+            
+            function cleanupFindQuiz() {
+                currentQuizData = [];
+                quizIndex = 0;
+                quizScore = 0;
+                findQuizArea.style.display = 'none';
+                findAnswerInput.style.display = 'block';
+                findResult.textContent = '';
+                findHanja.textContent = '?';
+                findScoreSpan.textContent = '0';
+                findRemainingSpan.textContent = '0';
+            }
+
+            async function startFindQuiz() {
+                const grade = findQuizGradeSelect.value;
+                const count = parseInt(findQuizCountSelect.value, 10);
+                try {
+                    const data = await ensureGradeDataLoaded(grade);
+                    currentQuizData = shuffle(data).slice(0, count);
+                    quizIndex = 0;
+                    quizScore = 0;
+                    findQuizArea.style.display = 'block';
+                    document.getElementById('findQuizQuestion').textContent = '이 한자의 훈음은 무엇일까요?';
+                    nextFindQuiz();
+                } catch (err) {
+                    alert('퀴즈 데이터를 불러오지 못했습니다. 다시 시도해주세요.');
+                    console.error(err);
+                }
+            }
+
+            function nextFindQuiz() {
+                if (quizIndex < currentQuizData.length) {
+                    findHanja.textContent = currentQuizData[quizIndex].한자;
+                    findAnswerInput.value = '';
+                    findResult.textContent = '';
+                    findAnswerInput.focus();
+                    findRemainingSpan.textContent = currentQuizData.length - quizIndex;
+                } else {
+                    findHanja.textContent = '퀴즈 종료!';
+                    findResult.textContent = `최종 점수: ${quizScore} / ${currentQuizData.length}`;
+                    findAnswerInput.style.display = 'none';
+                    setTimeout(() => {
+                        alert(`퀴즈가 종료되었습니다! 최종 점수는 ${quizScore}점 입니다.`);
+                        loadScreen('home');
+                    }, 1000);
+                }
+                findScoreSpan.textContent = quizScore;
+            }
+
+            findAnswerInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && quizIndex < currentQuizData.length) {
+                    const answer = findAnswerInput.value.trim().split(/\s+/).join('');
+                    const correctAnswer = currentQuizData[quizIndex].훈음.split(/\s+/).join('');
+                    
+                    if (answer === correctAnswer) {
+                        findResult.textContent = '정답입니다!';
+                        findResult.className = 'quiz-result result-correct';
+                        quizScore++;
+                        playSound(correctSound);
+                    } else {
+                        findResult.textContent = `틀렸습니다. 정답은 '${currentQuizData[quizIndex].훈음}'입니다.`;
+                        findResult.className = 'quiz-result result-incorrect';
+                        playSound(incorrectSound);
+                    }
+                    findScoreSpan.textContent = quizScore;
+                    findAnswerInput.value = '';
+                    quizIndex++;
+                    setTimeout(() => {
+                        nextFindQuiz();
+                    }, 1500);
+                }
+            });
+            startFindQuizBtn.addEventListener('click', startFindQuiz);
+            resetFindQuizBtn.addEventListener('click', () => {
+                loadScreen('home');
+            });
+
+            /* ================== 훈음 고르기 (4지 선다) 퀴즈 로직 ================== */
+            const choosePronunciationQuizGradeSelect = document.getElementById('choosePronunciationQuizGradeSelect');
+            const choosePronunciationQuizCountSelect = document.getElementById('choosePronunciationQuizCountSelect');
+            const startChoosePronunciationQuizBtn = document.getElementById('startChoosePronunciationQuizBtn');
+            const choosePronunciationQuizArea = document.getElementById('choosePronunciationQuizArea');
+            const choosePronunciationHanja = document.getElementById('choosePronunciationHanja');
+            const choosePronunciationOptions = document.getElementById('choosePronunciationOptions');
+            const choosePronunciationResult = document.getElementById('choosePronunciationResult');
+            const choosePronunciationScoreSpan = document.getElementById('choosePronunciationScore');
+            const choosePronunciationRemainingSpan = document.getElementById('choosePronunciationRemaining');
+            const resetChoosePronunciationQuizBtn = document.getElementById('resetChoosePronunciationQuizBtn');
+            let currentPronunciationQuizData = [];
+            let pronunciationQuizIndex = 0;
+            let pronunciationQuizScore = 0;
+            
+            function cleanupChoosePronunciationQuiz() {
+                currentPronunciationQuizData = [];
+                pronunciationQuizIndex = 0;
+                pronunciationQuizScore = 0;
+                choosePronunciationQuizArea.style.display = 'none';
+                choosePronunciationResult.textContent = '';
+                choosePronunciationHanja.textContent = '?';
+                choosePronunciationOptions.innerHTML = '';
+                choosePronunciationScoreSpan.textContent = '0';
+                choosePronunciationRemainingSpan.textContent = '0';
+            }
+
+            async function startChoosePronunciationQuiz() {
+                const grade = choosePronunciationQuizGradeSelect.value;
+                const count = parseInt(choosePronunciationQuizCountSelect.value, 10);
+                try {
+                    const data = await ensureGradeDataLoaded(grade);
+                    if (data.length < 4) { alert("퀴즈를 시작하기에 데이터가 부족합니다."); return; }
+                    currentPronunciationQuizData = shuffle(data).slice(0, count);
+                    pronunciationQuizIndex = 0;
+                    pronunciationQuizScore = 0;
+                    choosePronunciationQuizArea.style.display = 'block';
+                    nextChoosePronunciationQuiz();
+                } catch (err) {
+                    alert('퀴즈 데이터를 불러오지 못했습니다. 다시 시도해주세요.');
+                    console.error(err);
+                }
+            }
+
+            function nextChoosePronunciationQuiz() {
+                if (pronunciationQuizIndex >= currentPronunciationQuizData.length) {
+                    choosePronunciationResult.textContent = `최종 점수: ${pronunciationQuizScore} / ${currentPronunciationQuizData.length}`;
+                    setTimeout(() => {
+                        alert(`퀴즈가 종료되었습니다! 최종 점수는 ${pronunciationQuizScore}점 입니다.`);
+                        loadScreen('home');
+                    }, 1000);
+                    return;
+                }
+                const currentItem = currentPronunciationQuizData[pronunciationQuizIndex];
+                choosePronunciationHanja.textContent = currentItem.한자;
+                choosePronunciationRemainingSpan.textContent = currentPronunciationQuizData.length - pronunciationQuizIndex;
+                
+                const allMeanings = Object.values(allHanjaData).flatMap(arr => arr.map(h => h.훈음));
+                const correctMeaning = currentItem.훈음;
+                const incorrectOptions = shuffle(allMeanings.filter(m => m !== correctMeaning)).slice(0, 3);
+                const options = shuffle([...incorrectOptions, correctMeaning]);
+
+                choosePronunciationOptions.innerHTML = '';
+                options.forEach(option => {
+                    const btn = document.createElement('button');
+                    btn.className = 'quiz-option';
+                    btn.textContent = option;
+                    btn.addEventListener('click', () => checkPronunciationAnswer(btn, correctMeaning));
+                    choosePronunciationOptions.appendChild(btn);
+                });
+                choosePronunciationResult.textContent = '';
+            }
+            
+            function checkPronunciationAnswer(selectedBtn, correctAnswer) {
+                const isCorrect = selectedBtn.textContent === correctAnswer;
+                if (isCorrect) {
+                    pronunciationQuizScore++;
+                    choosePronunciationResult.textContent = '정답입니다!';
+                    choosePronunciationResult.className = 'quiz-result result-correct';
+                    playSound(correctSound);
+                } else {
+                    choosePronunciationResult.textContent = `틀렸습니다. 정답은 '${correctAnswer}'입니다.`;
+                    choosePronunciationResult.className = 'quiz-result result-incorrect';
+                    playSound(incorrectSound);
+                }
+                choosePronunciationScoreSpan.textContent = pronunciationQuizScore;
+                
+                document.querySelectorAll('.quiz-option').forEach(btn => btn.disabled = true);
+                setTimeout(() => {
+                    pronunciationQuizIndex++;
+                    nextChoosePronunciationQuiz();
+                    document.querySelectorAll('.quiz-option').forEach(btn => btn.disabled = false);
+                }, 1500);
+            }
+            
+            startChoosePronunciationQuizBtn.addEventListener('click', startChoosePronunciationQuiz);
+            resetChoosePronunciationQuizBtn.addEventListener('click', () => {
+                loadScreen('home');
+            });
+            
+            /* ================== 한자 고르기 (4지 선다) 퀴즈 로직 ================== */
+            const chooseHanjaQuizGradeSelect = document.getElementById('chooseHanjaQuizGradeSelect');
+            const chooseHanjaQuizCountSelect = document.getElementById('chooseHanjaQuizCountSelect');
+            const startChooseHanjaQuizBtn = document.getElementById('startChooseHanjaQuizBtn');
+            const chooseHanjaQuizArea = document.getElementById('chooseHanjaQuizArea');
+            const chooseHanjaMeaning = document.getElementById('chooseHanjaMeaning');
+            const chooseHanjaOptions = document.getElementById('chooseHanjaOptions');
+            const chooseHanjaResult = document.getElementById('chooseHanjaResult');
+            const chooseHanjaScoreSpan = document.getElementById('chooseHanjaScore');
+            const chooseHanjaRemainingSpan = document.getElementById('chooseHanjaRemaining');
+            const resetChooseHanjaQuizBtn = document.getElementById('resetChooseHanjaQuizBtn');
+            let currentHanjaQuizData = [];
+            let hanjaQuizIndex = 0;
+            let hanjaQuizScore = 0;
+            
+            function cleanupChooseHanjaQuiz() {
+                currentHanjaQuizData = [];
+                hanjaQuizIndex = 0;
+                hanjaQuizScore = 0;
+                chooseHanjaQuizArea.style.display = 'none';
+                chooseHanjaResult.textContent = '';
+                chooseHanjaMeaning.textContent = '?';
+                chooseHanjaOptions.innerHTML = '';
+                chooseHanjaScoreSpan.textContent = '0';
+                chooseHanjaRemainingSpan.textContent = '0';
+            }
+
+            async function startChooseHanjaQuiz() {
+                const grade = chooseHanjaQuizGradeSelect.value;
+                const count = parseInt(chooseHanjaQuizCountSelect.value, 10);
+                try {
+                    const data = await ensureGradeDataLoaded(grade);
+                    if (data.length < 4) { alert("퀴즈를 시작하기에 데이터가 부족합니다."); return; }
+                    currentHanjaQuizData = shuffle(data).slice(0, count);
+                    hanjaQuizIndex = 0;
+                    hanjaQuizScore = 0;
+                    chooseHanjaQuizArea.style.display = 'block';
+                    nextChooseHanjaQuiz();
+                } catch (err) {
+                    alert('퀴즈 데이터를 불러오지 못했습니다. 다시 시도해주세요.');
+                    console.error(err);
+                }
+            }
+
+            function nextChooseHanjaQuiz() {
+                if (hanjaQuizIndex >= currentHanjaQuizData.length) {
+                    chooseHanjaResult.textContent = `최종 점수: ${hanjaQuizScore} / ${currentHanjaQuizData.length}`;
+                    setTimeout(() => {
+                        alert(`퀴즈가 종료되었습니다! 최종 점수는 ${hanjaQuizScore}점 입니다.`);
+                        loadScreen('home');
+                    }, 1000);
+                    return;
+                }
+                const currentItem = currentHanjaQuizData[hanjaQuizIndex];
+                chooseHanjaMeaning.textContent = currentItem.훈음;
+                chooseHanjaRemainingSpan.textContent = currentHanjaQuizData.length - hanjaQuizIndex;
+                
+                const allHanjas = Object.values(allHanjaData).flatMap(arr => arr.map(h => h.한자));
+                const correctHanja = currentItem.한자;
+                const incorrectOptions = shuffle(allHanjas.filter(h => h !== correctHanja)).slice(0, 3);
+                const options = shuffle([...incorrectOptions, correctHanja]);
+
+                chooseHanjaOptions.innerHTML = '';
+                options.forEach(option => {
+                    const btn = document.createElement('button');
+                    btn.className = 'quiz-option';
+                    btn.textContent = option;
+                    btn.addEventListener('click', () => checkHanjaAnswer(btn, correctHanja));
+                    chooseHanjaOptions.appendChild(btn);
+                });
+                chooseHanjaResult.textContent = '';
+            }
+            
+            function checkHanjaAnswer(selectedBtn, correctAnswer) {
+                const isCorrect = selectedBtn.textContent === correctAnswer;
+                if (isCorrect) {
+                    hanjaQuizScore++;
+                    chooseHanjaResult.textContent = '정답입니다!';
+                    chooseHanjaResult.className = 'quiz-result result-correct';
+                    playSound(correctSound);
+                } else {
+                    chooseHanjaResult.textContent = `틀렸습니다. 정답은 '${correctAnswer}'입니다.`;
+                    chooseHanjaResult.className = 'quiz-result result-incorrect';
+                    playSound(incorrectSound);
+                }
+                chooseHanjaScoreSpan.textContent = hanjaQuizScore;
+                
+                document.querySelectorAll('.quiz-option').forEach(btn => btn.disabled = true);
+                setTimeout(() => {
+                    hanjaQuizIndex++;
+                    nextChooseHanjaQuiz();
+                    document.querySelectorAll('.quiz-option').forEach(btn => btn.disabled = false);
+                }, 1500);
+            }
+            
+            startChooseHanjaQuizBtn.addEventListener('click', startChooseHanjaQuiz);
+            resetChooseHanjaQuizBtn.addEventListener('click', () => {
+                loadScreen('home');
+            });
+            
+            /* ==================== 플래시카드 로직 ==================== */
+            const gradeSelectFlash = document.getElementById('gradeSelectFlash');
+            const loadFlashBtn = document.getElementById('loadFlashBtn');
+            const flashcardGrid = document.getElementById('flashcard-grid');
+
+            loadFlashBtn.addEventListener('click', async () => {
+                const grade = gradeSelectFlash.value;
+                flashcardGrid.innerHTML = '<p>카드를 불러오는 중...</p>';
+                try {
+                    const data = await ensureGradeDataLoaded(grade);
+                    flashcardGrid.innerHTML = '';
+                    if (data.length === 0) {
+                        flashcardGrid.innerHTML = '<p>해당 급수 데이터가 없습니다.</p>';
+                        return;
+                    }
+                    data.forEach(item => {
+                        const cardContainer = document.createElement('div');
+                        cardContainer.className = 'flashcard-card-container';
+                        cardContainer.innerHTML = `
+                            <div class="flashcard-card">
+                                <div class="flashcard-face flashcard-front">${item.한자}</div>
+                                <div class="flashcard-face flashcard-back">
+                                    <div class="hanja-on-back">${item.한자}</div>
+                                    <div class="card-back-text">${item.훈음}</div>
+                                    <div class="card-back-text">${item.음}</div>
+                                </div>
+                            </div>
+                        `;
+                        cardContainer.addEventListener('click', () => {
+                            cardContainer.querySelector('.flashcard-card').classList.toggle('is-flipped');
+                        });
+                        flashcardGrid.appendChild(cardContainer);
+                    });
+                } catch (err) {
+                    flashcardGrid.innerHTML = '<p>데이터 로드 실패. 올바른 급수를 선택했는지 확인해주세요.</p>';
+                    console.error(err);
+                }
+            });
+            /* ==================== 메모리 게임 로직 ==================== */
+            const gradeSelectMemory = document.getElementById('gradeSelectMemory');
+            const difficultySelectMemory = document.getElementById('difficultySelectMemory');
+            const startMemoryBtn = document.getElementById('startMemoryBtn');
+            const memorySettings = document.getElementById('memory-settings');
+            const memoryGameArea = document.getElementById('memory-game-area');
+            const backToSettingsBtn = document.getElementById('back-to-settings-btn');
+            const restartBtn = document.getElementById('restart-btn');
+            const cardGrid = document.getElementById('card-grid');
+            const movesCounter = document.getElementById('moves-counter');
+            const pairsCounter = document.getElementById('pairs-counter');
+            const alertModal = document.getElementById('alert-modal');
+
+            let memoryHanjaList = [];
+            let gameCards = [];
+            let flippedCards = [];
+            let matchedPairs = 0;
+            let moves = 0;
+            let numberOfPairs = 0;
+            
+            function createMemoryCards() {
+                moves = 0;
+                matchedPairs = 0;
+                movesCounter.textContent = `시도 횟수: ${moves}`;
+                pairsCounter.textContent = `맞힌 쌍: ${matchedPairs} / ${numberOfPairs}`;
+                cardGrid.innerHTML = '';
+                alertModal.style.display = 'none';
+
+                let selectedHanjas = shuffle(memoryHanjaList).slice(0, numberOfPairs);
+                
+                gameCards = shuffle([...selectedHanjas, ...selectedHanjas]);
+                
+                cardGrid.className = `card-grid grid-${difficultySelectMemory.options[difficultySelectMemory.selectedIndex].text.toLowerCase().includes('쉬움') ? 'easy' : difficultySelectMemory.options[difficultySelectMemory.selectedIndex].text.toLowerCase().includes('보통') ? 'normal' : 'hard'}`;
+
+                gameCards.forEach(hanjaObj => {
+                    const cardContainer = document.createElement('div');
+                    cardContainer.className = 'card-container';
+                    cardContainer.innerHTML = `
+                        <div class="card">
+                            <div class="card-face card-front">?</div>
+                            <div class="card-face card-back">
+                                <div class="hanja-on-back">${hanjaObj.hanja}</div>
+                                <div class="card-back-text">${hanjaObj.meaning}</div>
+                            </div>
+                        </div>
+                    `;
+                    cardContainer.addEventListener('click', () => flipCard(cardContainer, hanjaObj.hanja));
+                    cardGrid.appendChild(cardContainer);
+                });
+            }
+
+            function flipCard(cardContainer, hanja) {
+                if (flippedCards.length < 2 && !cardContainer.querySelector('.card').classList.contains('is-flipped')) {
+                    const cardElement = cardContainer.querySelector('.card');
+                    cardElement.classList.add('is-flipped');
+                    flippedCards.push({ hanja, element: cardElement });
+                    playSound(waterDropSound);
+
+                    if (flippedCards.length === 2) {
+                        moves++;
+                        movesCounter.textContent = `시도 횟수: ${moves}`;
+                        
+                        setTimeout(() => {
+                            const [card1, card2] = flippedCards;
+                            if (card1.hanja === card2.hanja) {
+                                matchedPairs++;
+                                pairsCounter.textContent = `맞힌 쌍: ${matchedPairs} / ${numberOfPairs}`;
+                                playSound(correctSound);
+                                card1.element.classList.add('is-matched');
+                                card2.element.classList.add('is-matched');
+                                card1.element.querySelector('.card-back').classList.add('is-matched-face');
+                                card2.element.querySelector('.card-back').classList.add('is-matched-face');
+                            } else {
+                                playSound(incorrectSound);
+                                card1.element.classList.remove('is-flipped');
+                                card2.element.classList.remove('is-flipped');
+                            }
+                            flippedCards = [];
+                            
+                            if (matchedPairs === numberOfPairs) {
+                                showVictoryModal();
+                            }
+                        }, 1000);
+                    }
+                }
+            }
+
+            function showVictoryModal() {
+                alertModal.style.display = 'block';
+            }
+
+            async function startMemoryGame() {
+                const selectedGrade = gradeSelectMemory.value;
+                numberOfPairs = parseInt(difficultySelectMemory.value, 10);
+                if (!selectedGrade) { alert("급수를 선택하세요."); return; }
+                
+                try {
+                    const rawData = await ensureGradeDataLoaded(selectedGrade);
+                    memoryHanjaList = rawData.map(item => ({ hanja: item.한자, meaning: item.훈음 || '' }));
+                    if (memoryHanjaList.length < numberOfPairs) {
+                        alert(`선택한 급수에 메모리 게임을 위한 데이터가 부족합니다. (최소 ${numberOfPairs}쌍 필요)`);
+                        return;
+                    }
+                    memorySettings.style.display = 'none';
+                    memoryGameArea.style.display = 'block';
+                    createMemoryCards();
+                } catch (err) {
+                    console.error(err);
+                    alert('데이터 로드 실패: ' + (err.message || err));
+                }
+            }
+        
+            startMemoryBtn.addEventListener('click', startMemoryGame);
+            restartBtn.addEventListener('click', createMemoryCards);
+            backToSettingsBtn.addEventListener('click', () => {
+                memorySettings.style.display = 'block';
+                memoryGameArea.style.display = 'none';
+                alertModal.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>
